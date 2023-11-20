@@ -1,0 +1,15 @@
+{
+    "name": "zim32/php",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Zim32\\Php\\": "src/"
+        }
+    },
+    "require": {
+        "openswoole/core": "22.1.2",
+        "nyholm/psr7": "^1.8",
+        "ilexn/swoole-convert-psr7": "^0.6.1",
+        "slim/slim": "4.*"
+    }
+}
