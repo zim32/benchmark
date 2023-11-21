@@ -91,26 +91,26 @@ $app->get('/ping', function(RequestInterface $request, ResponseInterface $respon
 $app->post('/ping', function(RequestInterface $request, ResponseInterface $response) {
     $figures = loadFigures();
     $start = microtime(true);
-    $iterations = 0;
-    $totalArea = 0;
 
-    while (true) {
-        if ((microtime(true) - $start) > 20) {
-            break;
-        }
+    $minArea = PHP_FLOAT_MAX;
+    $maxArea = PHP_FLOAT_MIN;
+    $totalArea = 0.0;
 
+    for ($x = 1; $x <= 1_000_000; $x++) {
         foreach ($figures as $figure) {
             $area = $figure->computeArea();
+            $minArea = min($minArea, $area);
+            $maxArea = max($maxArea, $area);
             $totalArea += $area;
-            $iterations++;
         }
     }
 
     $responseData = [
         'app' => 'php-swoole',
-        'time' => time(),
+        'time' => microtime(true) - $start,
+        'min_area' => $minArea,
+        'max_area' => $maxArea,
         'total_area' => $totalArea,
-        'iterations' => $iterations,
     ];
 
     $response = $response->withHeader('Content-Type', 'application/json');

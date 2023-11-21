@@ -132,9 +132,10 @@ struct Response {
 #[serde(crate = "rocket::serde")]
 struct PostResponse {
     app: &'static str,
-    time: u64,
+    time: u128,
+    min_area: f64,
+    max_area: f64,
     total_area: f64,
-    iterations: u64,
 }
 
 impl Default for Response {
@@ -159,9 +160,10 @@ impl Default for PostResponse {
     fn default() -> Self {
         Self {
             app: "rust-rocke",
-            time: std::time::UNIX_EPOCH.elapsed().unwrap().as_secs(),
+            min_area: f64::MAX,
+            max_area: f64::MIN,
             total_area: 0.0,
-            iterations: 0,
+            time: 0,
         }
     }
 }
@@ -189,17 +191,16 @@ fn ping_post() -> Json<PostResponse> {
     let mut response = PostResponse::default();
     let start = Instant::now();
 
-    loop {
-        if start.elapsed().as_secs() > 20 {
-            break;
-        }
-
+    for _ in 1..1_000_000 {
         for figure in figures.iter() {
             let area = figure.compute_area();
+            response.min_area = response.min_area.min(area);
+            response.max_area = response.max_area.max(area);
             response.total_area += area;
-            response.iterations += 1;
         }
     }
+
+    response.time = start.elapsed().as_millis();
 
     Json(response)
 }

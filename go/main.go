@@ -120,7 +120,7 @@ func main() {
 			area := figure.ComputeArea()
 			minArea = math.Min(minArea, area)
 			maxArea = math.Max(maxArea, area)
-			totalArea += figure.ComputeArea()
+			totalArea += area
 			figuresCount[figure.GetType()]++
 		}
 
@@ -137,27 +137,26 @@ func main() {
 	r.POST("/ping", func(c *gin.Context) {
 		figures := loadFigures()
 
-		start := time.Now()
-		total_area := 0.0
-		iterations := 0
+		var minArea float64 = math.MaxFloat64
+		var maxArea float64 = 0.0
+		var totalArea float64 = 0.0
+		var start = time.Now().UnixMilli()
 
-		for {
-			if time.Since(start).Seconds() > 20 {
-				break
-			}
-
+		for i := 1; i <= 1_000_000; i++ {
 			for _, figure := range figures {
 				area := figure.ComputeArea()
-				total_area += area
-				iterations++
+				minArea = math.Min(minArea, area)
+				maxArea = math.Max(maxArea, area)
+				totalArea += area
 			}
 		}
 
 		c.JSON(200, gin.H{
 			"app":        "go-gin****",
-			"time":       time.Now().Unix(),
-			"total_area": total_area,
-			"iterations": iterations,
+			"time":       time.Now().UnixMilli() - start,
+			"min_area":   minArea,
+			"max_area":   maxArea,
+			"total_area": totalArea,
 		})
 	})
 
