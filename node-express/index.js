@@ -85,6 +85,32 @@ if (cluster.isMaster) {
         })
     })
 
+    app.post('/ping', (req, res) => {
+        const figures = loadFigures()
+
+        let minArea = Number.MAX_VALUE
+        let maxArea = Number.MIN_VALUE
+        let totalArea = 0.0
+        const start = Date.now()
+
+        for (let i = 1; i <= 1_000_000; i++) {
+            for (const figure of figures) {
+                const area = computeFigureArea(figure)
+                minArea = Math.min(minArea, area)
+                maxArea = Math.max(maxArea, area)
+                totalArea += area
+            }
+        }
+
+        res.json({
+            app: 'node-expre',
+            time: (Date.now() - start) / 1000,
+            min_area: minArea,
+            max_area: maxArea,
+            total_area: totalArea,
+        })
+    })
+
     app.listen(8080, '0.0.0.0', () => {
         console.log(`Example app listening on port 0.0.0.0:8080`)
     })
