@@ -130,6 +130,13 @@ if (cluster.isMaster) {
         }
     })
 
+    fastify.get('/ping-v2', async function handler (request, reply) {
+        return {
+            app: 'node-fasti',
+            time: Math.floor(Date.now() / 1000),
+        }
+    })
+
     fastify.post('/ping', async function handler (request, reply) {
         const figures = loadFigures()
 
